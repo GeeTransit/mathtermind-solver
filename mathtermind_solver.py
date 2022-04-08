@@ -30,9 +30,12 @@ def rank_guess(pool=DEFAULT_POOL, nums=()):
     for triplet in pool:
         new_pools[sum(1 for num in triplet if num in nums)] += 1
     new_pools.sort()
+    points = sum(1 for new_pool in new_pools if new_pool) - 1
+    if points <= 0:
+        return 1.0  # Bad guess (there's only one possible nums matching)
     return (
         sum(new_pools[i+1] - new_pools[i] for i in range(N))
-        / sum(1 for new_pool in new_pools if new_pool)
+        / points
         / sum(new_pools)
     )
     # change = sum(new_pool[i]-new_pool[for i in range(len(nums)-1))
