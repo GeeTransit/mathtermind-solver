@@ -94,7 +94,7 @@ def curse(
         )
     best_path = None
     for i, (rank, nums) in enumerate(guesses):
-        if i > 4 and rank > 0.15:
+        if i >= 2 and rank >= 0.2:
             break
         if debug:
             path = {}
