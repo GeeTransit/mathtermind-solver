@@ -103,8 +103,8 @@ def curse(
         for matches in range(0, len(nums) + 1):
             # new_guesses = (guesses, (nums, matches))
             new_pool = ok_triplets(pool=pool, nums=nums, matches=matches)
-            if len(new_pool) == len(pool):
-                continue
+            # if len(new_pool) == len(pool):
+                # continue
             if len(new_pool) == 0:
                 continue
             if len(new_pool) == 1:
