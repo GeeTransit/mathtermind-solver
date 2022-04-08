@@ -138,7 +138,7 @@ def curse(
         if ok:
             if debug:
                 return {
-                    f'guess {" ".join(map(str, nums))} ({rank:.2f})': {
+                    f'guess {" ".join(map(str, nums))} ({i}={rank:.2f})': {
                         f'on {matches} ({path_len[matches] / sum(path_len.values()):.2f})': path[matches]
                         for matches in sorted(path, key=lambda matches: path_len[matches], reverse=True)
                     },
@@ -146,14 +146,14 @@ def curse(
             return True
         else:
             if debug and best_path is None:
-                best_path = rank, nums, path, path_len
+                best_path = rank, nums, path, path_len, i
     if debug:
         if best_path is not None:
-            rank, nums, path, path_len = best_path
+            rank, nums, path, path_len, i = best_path
             return {
                 0: "partial!",  # denote partial result
                 1: "...",
-                f'guess {" ".join(map(str, nums))} ({rank:.2f})': {
+                f'guess {" ".join(map(str, nums))} ({i}={rank:.2f})': {
                     f'on {matches} ({path_len[matches] / sum(path_len.values()):.2f})': path[matches]
                     for matches in sorted(path, key=lambda matches: path_len[matches], reverse=True)
                 },
