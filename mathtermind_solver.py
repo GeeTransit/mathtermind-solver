@@ -105,10 +105,7 @@ def pool_split(
 import math
 
 def rank_guess(pool=DEFAULT_POOL, nums=()):
-    N = len(nums)
-    new_pools = [0] * (N + 1)
-    for triplet in pool:
-        new_pools[nums_matching(triplet=triplet, nums=nums)] += 1
+    new_pools = pool_counts(pool=pool, nums=nums).values()
     average_bits = sum(
         new_pool * math.log(new_pool, 2)
         for new_pool in new_pools
@@ -179,9 +176,8 @@ def curse(
             path = {}
             path_len = {}
         ok = None
-        for matches in range(0, len(nums) + 1):
+        for matches, new_pool in pool_split(pool=pool, nums=nums).items():
             # new_guesses = (guesses, (nums, matches))
-            new_pool = ok_triplets(pool=pool, nums=nums, matches=matches)
             # if len(new_pool) == len(pool):
                 # continue
             if len(new_pool) == 0:
