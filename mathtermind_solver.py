@@ -9,18 +9,6 @@ DEFAULT_POOL = [
     for k in range(j+1, 16)
 ]
 
-def eliminate(pool=DEFAULT_POOL, guesses=()):
-    raise RuntimeError
-    return {
-        triplet
-        for triplet in pool
-        if any(
-            True
-            for nums, matches in guesses
-            if sum(1 for num in triplet if num in nums) != matches
-        )
-    }
-
 def nums_matching(triplet: Ints = (), nums: Ints = ()):
     """Return nums matching the given triplet
 
