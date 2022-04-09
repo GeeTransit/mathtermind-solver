@@ -24,22 +24,21 @@ def ok_triplets(pool=DEFAULT_POOL, nums=(), matches=0):
         if sum(1 for num in triplet if num in nums) == matches
     ]
 
+import math
+
 def rank_guess(pool=DEFAULT_POOL, nums=()):
     N = len(nums)
     new_pools = [0] * (N + 1)
     for triplet in pool:
         new_pools[sum(1 for num in triplet if num in nums)] += 1
-    new_pools.sort()
-    points = sum(1 for new_pool in new_pools if new_pool) - 1
-    if points <= 0:
-        return 1.0  # Bad guess (there's only one possible nums matching)
-    return (
-        sum(new_pools[i+1] - new_pools[i] for i in range(N))
-        / points
-        / sum(new_pools)
-    )
-    # change = sum(new_pool[i]-new_pool[for i in range(len(nums)-1))
-    # return sum(new_pools) / sum(1 for new_pool in new_pools if new_pool)
+    average_bits = sum(
+        new_pool * math.log(new_pool, 2)
+        for new_pool in new_pools
+        if new_pool
+    ) / len(pool)
+    return 2**average_bits / len(pool)
+    # return max(new_pools) / len(pool)
+    # return sum(new_pool**2 for new_pool in new_pools) / len(pool)**2
 
 import itertools
 
@@ -94,7 +93,7 @@ def curse(
         )
     best_path = None
     for i, (rank, nums) in enumerate(guesses):
-        if i >= 2 and rank >= 0.2:
+        if i >= 2 and rank >= 0.55:
             break
         if debug:
             path = {}
@@ -177,7 +176,7 @@ D = ok_triplets(pool=C, nums=(1, 5), matches=2)
 
 '''
 paste this line lol:
-import re,json; print("\n".join(line[2:] for line in re.sub(r'[][{},"]', '', json.dumps(curse(levels=7, debug=1, force_guesses=[[1,2,3,4]]), indent=2)).splitlines() if line.strip()))
+import re,json; print("\n".join(line[2:] for line in re.sub(r'[][{},"]', '', json.dumps(curse(levels=7, debug=1), indent=2)).splitlines() if line.strip()))
 
 proves mtm is solvable (start with 1-4, 5-8, and 9-12):
 {(i,j,k):curse(ok_triplets(ok_triplets(ok_triplets(nums=[1,2,3,4],matches=i),nums=[5,6,7,8],matches=j),nums=[9,10,11,12],matches=k),levels=4) for i in range(0,4) for j in range(0,4-i) for k in range(0,4-i-j)}
