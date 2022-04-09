@@ -50,7 +50,7 @@ def ok_triplets(pool=DEFAULT_POOL, nums=(), matches=0):
     return [
         triplet
         for triplet in pool
-        if sum(1 for num in triplet if num in nums) == matches
+        if nums_matching(triplet=triplet, nums=nums) == matches
     ]
 
 import math
@@ -59,7 +59,7 @@ def rank_guess(pool=DEFAULT_POOL, nums=()):
     N = len(nums)
     new_pools = [0] * (N + 1)
     for triplet in pool:
-        new_pools[sum(1 for num in triplet if num in nums)] += 1
+        new_pools[nums_matching(triplet=triplet, nums=nums)] += 1
     average_bits = sum(
         new_pool * math.log(new_pool, 2)
         for new_pool in new_pools
