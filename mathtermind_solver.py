@@ -1,4 +1,5 @@
-from typing import Collection
+from collections import Counter, defaultdict
+from typing import Mapping, Collection
 
 Ints = Collection[int]
 
@@ -40,6 +41,66 @@ def ok_triplets(pool=DEFAULT_POOL, nums=(), matches=0):
         for triplet in pool
         if nums_matching(triplet=triplet, nums=nums) == matches
     ]
+
+def pool_counts(
+    pool: Collection[Ints] = (),
+    nums: Ints = (),
+) -> Mapping[int, int]:
+    """Return a dict with amount of matching triplets
+
+    Arguments:
+        pool: possible triplets at this point
+        nums: the numbers being guessed
+
+    Returns:
+        mapping from nums matching to the amount of matching triplets
+
+    Example:
+        >>> pool = [(1, 2), (1, 3)]
+        >>> pool_counts(pool=pool, nums=[1, 2])
+        {2: 1, 1: 1}
+        >>> pool_counts(pool=pool, nums=[2])
+        {1: 1, 0: 1}
+        >>> pool_counts(pool=pool, nums=[1])
+        {1: 2}
+        >>> pool_counts(pool=pool, nums=[4])
+        {0: 2}
+
+    """
+    return dict(Counter(
+        nums_matching(triplet=triplet, nums=nums)
+        for triplet in pool
+    ))
+
+def pool_split(
+    pool: Collection[Ints] = (),
+    nums: Ints = (),
+) -> Mapping[int, Collection[Ints]]:
+    """Return a dict with pools for each possible nums matching
+
+    Arguments:
+        pool: possible triplets at this point
+        nums: the numbers being guessed
+
+    Returns:
+        mapping from nums matching to the matching list of triplets
+
+    Example:
+        >>> pool = [(1, 2), (1, 3)]
+        >>> pool_split(pool=pool, nums=[1, 2])
+        {2: [(1, 2)], 1: [(1, 3)]}
+        >>> pool_split(pool=pool, nums=[2])
+        {1: [(1, 2)], 0: [(1, 3)]}
+        >>> pool_split(pool=pool, nums=[1])
+        {1: [(1, 2), (1, 3)]}
+        >>> pool_split(pool=pool, nums=[4])
+        {0: [(1, 2), (1, 3)]}
+
+    """
+    result = defaultdict(list)
+    for triplet in pool:
+        result[nums_matching(triplet=triplet, nums=nums)].append(triplet)
+    return dict(result)
 
 import math
 
