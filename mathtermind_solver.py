@@ -1,3 +1,7 @@
+from typing import Collection
+
+Ints = Collection[int]
+
 DEFAULT_POOL = [
     (i, j, k)
     for i in range(1, 16)
@@ -16,6 +20,31 @@ def eliminate(pool=DEFAULT_POOL, guesses=()):
             if sum(1 for num in triplet if num in nums) != matches
         )
     }
+
+def nums_matching(triplet: Ints = (), nums: Ints = ()):
+    """Return nums matching the given triplet
+
+    Arguments:
+        triplet: the possible triplet to match against
+        nums: the numbers being guessed
+
+    Returns:
+        amount of triplet numbers matching the guess numbers
+
+    Example:
+        >>> nums_matching(triplet=[1, 2, 3], nums=[1])
+        1
+        >>> nums_matching(triplet=[1, 2, 3], nums=[1, 2])
+        2
+        >>> nums_matching(triplet=[1, 2, 3], nums=[1, 2, 3])
+        3
+        >>> nums_matching(triplet=[1, 2, 3], nums=[1, 4])
+        1
+        >>> nums_matching(triplet=[1, 2, 3], nums=[4, 5])
+        0
+
+    """
+    return sum(num in nums for num in triplet)
 
 def ok_triplets(pool=DEFAULT_POOL, nums=(), matches=0):
     return [
