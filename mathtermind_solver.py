@@ -104,6 +104,29 @@ def pool_split(
 
 import math
 
+def entropy(probabilities: Ints = ()) -> float:
+    """Return the entropy of the probability distribution
+
+    Arguments:
+        probabilities: list of probabilities
+
+    Returns:
+        entropy of the distribution
+
+    Example:
+        >>> entropy([1/2, 1/2])
+        1.0
+        >>> round(entropy([9/10, 1/10]), 7)
+        0.4689956
+
+    Note:
+        The probabilities are normalized to sum to 1.
+
+    """
+    if not all(p > 0 for p in probabilities):
+        raise ValueError("all probabilities must be positive")
+    return -sum(p*math.log2(p) for p in probabilities) / sum(probabilities)
+
 def rank_guess(pool=DEFAULT_POOL, nums=()):
     new_pools = pool_counts(pool=pool, nums=nums).values()
     average_bits = sum(
