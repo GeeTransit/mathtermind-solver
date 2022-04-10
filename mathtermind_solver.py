@@ -2,8 +2,10 @@ import math
 import itertools
 import json
 import re
+import argparse
+import sys
 from collections import Counter, defaultdict
-from typing import Optional, Any, Mapping, Collection
+from typing import Optional, Any, List, Mapping, Collection
 
 Ints = Collection[int]
 
@@ -402,6 +404,55 @@ C = ok_triplets(pool=B, nums=(9, 10, 11, 12), matches=1)
 D = ok_triplets(pool=C, nums=(1, 5), matches=2)
 
 # curse(pool=C, levels=3)
+
+parser = argparse.ArgumentParser(description="Solve a Mathtermind game")
+parser.add_argument(
+    "-g", "--guessed", action="append",
+    help="a guess of the form #[,#]*:R where R is nums matching",
+)
+parser.add_argument(
+    "--json", action="store_true",
+    help="return a JSON of the paths taken",
+)
+parser.add_argument(
+    "--levels", default="1:9",
+    help="the range of levels to try (of the form #:# or #)",
+)
+
+def main(argv: Optional[List[str]] = None):
+    """Entry point to Mathtermind solver"""
+    args = parser.parse_args(argv)
+    pool = DEFAULT_POOL
+    if args.guessed is not None:
+        for guessed in args.guessed:
+            nums, matches = guessed.split(":")
+            matches = int(matches)
+            nums = [int(x) for x in nums.split(",")]
+            pool = ok_triplets(pool=pool, nums=nums, matches=matches)
+    if ":" in args.levels:
+        start, stop = [int(x) for x in args.levels.split(":")]
+    else:
+        start = int(args.levels)
+        stop = start + 1
+    for levels in range(start, stop + 1):
+        if curse(pool=pool, levels=levels):
+            break
+    else:
+        levels = start  # give best guess if not possible
+    path = curse(pool=pool, levels=levels, path=True)
+    if args.json:
+        print(json.dumps(path))
+    else:
+        print(tree_to_text(tree_from_path(
+            path=path,
+            pool=pool,
+            levels=levels,
+        )))
+    if path.get("partial"):
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
 
 '''
 paste this line lol:
