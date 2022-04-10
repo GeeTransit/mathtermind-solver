@@ -129,12 +129,8 @@ def entropy(probabilities: Ints = ()) -> float:
 
 def rank_guess(pool=DEFAULT_POOL, nums=()):
     new_pools = pool_counts(pool=pool, nums=nums).values()
-    average_bits = sum(
-        new_pool * math.log(new_pool, 2)
-        for new_pool in new_pools
-        if new_pool
-    ) / len(pool)
-    return 2**average_bits / len(pool)
+    average_bits = entropy(new_pools)
+    return 2 ** -average_bits / sum(new_pools)
     # return max(new_pools) / len(pool)
     # return sum(new_pool**2 for new_pool in new_pools) / len(pool)**2
 
