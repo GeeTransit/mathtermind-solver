@@ -161,19 +161,14 @@ def curse(
             return [f'must be {" ".join(map(str, pool[0]))}']
         return True
     if levels == 0:
-        if len(pool) == 1:
-            if debug:
-                return [f'must be {" ".join(map(str, pool[0]))}']
-            return True
-        else:
-            if debug:
-                return [
-                    "partial!",
-                    0,
-                    "could be one of",
-                    *(" ".join(map(str, nums)) for nums in pool),
-                ]
-            return None
+        if debug:
+            return [
+                "partial!",
+                0,
+                "could be one of",
+                *(" ".join(map(str, nums)) for nums in pool),
+            ]
+        return None
     if force_guesses:
         nums = force_guesses[0]
         force_guesses = force_guesses[1:]
