@@ -197,13 +197,6 @@ def curse(
             # new_guesses = (guesses, (nums, matches))
             # if len(new_pool) == len(pool):
                 # continue
-            if len(new_pool) == 1:
-                if ok is None:
-                    ok = True
-                if debug:
-                    path[matches] = [f'must be {" ".join(map(str, new_pool[0]))}']
-                    path_len[matches] = 1
-                continue
             p = curse(
                 pool=new_pool,
                 # guesses=new_guesses,
