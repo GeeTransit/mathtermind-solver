@@ -151,8 +151,13 @@ def curse(
     # guesses=(),
     levels=0,
     debug=False,
+    path=False,
     force_guesses=(),
 ):
+    save_path = path
+    del path
+    if debug and save_path:
+        raise ValueError("debug and path cannot be used together")
     # with debug=True, check for partials using (0 in p and p[0] == "partial!")
     global G
     G += 1
@@ -162,6 +167,8 @@ def curse(
     if len(pool) == 1:
         if debug:
             return [f'must be {" ".join(map(str, pool[0]))}']
+        if save_path:
+            return {}
         return True
     if levels == 0:
         if debug:
@@ -171,6 +178,8 @@ def curse(
                 "could be one of",
                 *(" ".join(map(str, nums)) for nums in pool),
             ]
+        if save_path:
+            return {"partial": True}
         return None
     if force_guesses:
         nums = force_guesses[0]
@@ -187,9 +196,10 @@ def curse(
             break
         if i >= 6:
             break
-        if debug:
+        if debug or save_path:
             path = {}
-            path_len = {}
+            if debug:
+                path_len = {}
         ok = None
         for matches, new_pool in pool_split(pool=pool, nums=nums).items():
             # new_guesses = (guesses, (nums, matches))
@@ -200,22 +210,28 @@ def curse(
                 # guesses=new_guesses,
                 levels=levels - 1,
                 debug=debug,
+                path=save_path,
                 force_guesses=force_guesses,
             )
-            if not debug and not p or debug and 0 in p and p[0] == "partial!":
+            if (
+                not debug and not save_path and not p
+                or debug and 0 in p and p[0] == "partial!"
+                or save_path and p.get("partial")
+            ):
                 ok = False
-                if not debug:
+                if not debug and not save_path:
                     break
             else:
                 if ok is None:
                     ok = True
-            if debug:
-                if 0 in p and p[0] == "partial!":
+            if debug or save_path:
+                if debug and 0 in p and p[0] == "partial!":
                     p = p.copy()
                     del p[1]
                     del p[0]
                 path[matches] = p
-                path_len[matches] = len(new_pool)
+                if debug:
+                    path_len[matches] = len(new_pool)
         if ok:
             if debug:
                 return {
@@ -224,13 +240,17 @@ def curse(
                         for matches in sorted(path, key=lambda matches: path_len[matches], reverse=True)
                     },
                 }
+            if save_path:
+                return {"nums": nums, **path}
             return True
         else:
-            if debug and best_path is None:
-                best_path = rank, nums, path, path_len, i
-    if debug:
+            if (debug or save_path) and best_path is None:
+                best_path = rank, nums, path, path_len if debug else None, i
+    if debug or save_path:
         if best_path is not None:
             rank, nums, path, path_len, i = best_path
+            if save_path:
+                return {"partial": True, "nums": nums, **path}
             return {
                 0: "partial!",  # denote partial result
                 1: "...",
@@ -240,6 +260,8 @@ def curse(
                 },
             }
         else:
+            if save_path:
+                return {"partial": True}
             return {
                 0: "partial!",
                 1: "...",
