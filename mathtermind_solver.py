@@ -1,5 +1,7 @@
 import math
 import itertools
+import json
+import re
 from collections import Counter, defaultdict
 from typing import Optional, Any, Mapping, Collection
 
@@ -307,14 +309,10 @@ def tree_from_path(
             i = 0  # Index is 0 because it's forced
         else:
             # Find the original index of the guess
-            i = next(
-                i
-                for i, (rank, guess_nums) in enumerate(sorted(
-                    (rank_guess(pool=pool, nums=nums), nums)
-                    for nums in make_guesses(pool)
-                ))
-                if guess_nums == nums
-            )
+            i = sorted(
+                make_guesses(pool),
+                key=lambda nums: (rank_guess(pool=pool, nums=nums), nums)
+            ).index(nums)
 
         rank = rank_guess(pool=pool, nums=nums)
         splits = pool_split(pool=pool, nums=nums)
@@ -380,6 +378,21 @@ def tree_from_path(
         1: "...",
         f'guess 0 ({0:.2f})': {},
     }
+
+def tree_to_text(tree: Any) -> str:
+    """Return a YAML-like version of the search tree
+
+    Note:
+        The result uses tabs for indentation, meaning changing them to spaces
+        is a simple ``tree_to_text(...).replace("\t", " "*4)``.
+
+    """
+    return "\n".join(
+        line[1:] if not line[:1].strip() else line  # Unindent if possible
+        for line in json.dumps(tree, indent="\t").splitlines()
+        for line in [re.sub(r'[][{},"]', "", line)]  # Remove most syntax
+        if line.strip()  # Remove empty lines
+    )
 
 # list(curse(levels=1))
 
