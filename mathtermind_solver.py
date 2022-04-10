@@ -1,3 +1,5 @@
+import math
+import itertools
 from collections import Counter, defaultdict
 from typing import Mapping, Collection
 
@@ -102,8 +104,6 @@ def pool_split(
         result[nums_matching(triplet=triplet, nums=nums)].append(triplet)
     return dict(result)
 
-import math
-
 def entropy(probabilities: Ints = ()) -> float:
     """Return the entropy of the probability distribution
 
@@ -133,8 +133,6 @@ def rank_guess(pool=DEFAULT_POOL, nums=()):
     return 2 ** -average_bits / sum(new_pools)
     # return max(new_pools) / len(pool)
     # return sum(new_pool**2 for new_pool in new_pools) / len(pool)**2
-
-import itertools
 
 def make_guesses(pool=DEFAULT_POOL):
     nums = sorted({num for triplet in pool for num in triplet})
