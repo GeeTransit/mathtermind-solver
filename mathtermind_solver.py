@@ -125,7 +125,10 @@ def entropy(probabilities: Ints = ()) -> float:
     """
     if not all(p > 0 for p in probabilities):
         raise ValueError("all probabilities must be positive")
-    return -sum(p*math.log2(p) for p in probabilities) / sum(probabilities)
+    return (
+        -math.fsum(p*math.log2(p) for p in probabilities)
+        / sum(probabilities)
+    )
 
 def rank_guess(pool=DEFAULT_POOL, nums=()):
     new_pools = pool_counts(pool=pool, nums=nums).values()
