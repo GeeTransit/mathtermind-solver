@@ -1,7 +1,7 @@
 import math
 import itertools
 from collections import Counter, defaultdict
-from typing import Mapping, Collection
+from typing import Optional, Any, Mapping, Collection
 
 Ints = Collection[int]
 
@@ -268,6 +268,118 @@ def curse(
                 f'guess 0 ({0:.2f})': {},
             }
     return None
+
+def tree_from_path(
+    path: dict = {"partial": True},
+    pool: Collection[Ints] = (),
+    force_guesses: Optional[Collection[Ints]] = None,
+    levels: Optional[int] = None,
+) -> Any:
+    """Return a human readable search tree
+
+    Arguments:
+        pool: possible triplets at this point
+        path: result from ``curse(..., path=True)``
+        force_guesses: nums to guess at the start
+        levels: depth of search
+
+    Returns:
+        human readable tree with final and partial triplets
+
+    This is preferred over ``curse(..., debug=True)``.
+
+    Other arguments should have the same value as the call to `curse`.
+
+    """
+    nums = path.get("nums")
+    partial = path.get("partial")
+
+    # Only the uppermost result should have "partial!"
+    def _remove_partial(result):
+        if 0 in result and result[0] == "partial!":
+            del result[1]
+            del result[0]
+        return result
+
+    if nums:
+        if force_guesses is not None and force_guesses:
+            assert nums == force_guesses[0]
+            i = 0  # Index is 0 because it's forced
+        else:
+            # Find the original index of the guess
+            i = next(
+                i
+                for i, (rank, guess_nums) in enumerate(sorted(
+                    (rank_guess(pool=pool, nums=nums), nums)
+                    for nums in make_guesses(pool)
+                ))
+                if guess_nums == nums
+            )
+
+        rank = rank_guess(pool=pool, nums=nums)
+        splits = pool_split(pool=pool, nums=nums)
+
+        return {
+            # Denote partial result if needed
+            **({
+                0: "partial!",
+                1: "...",
+            } if partial else {}),
+            # Show the numbers to guess, its index, and its rank
+            f'guess {" ".join(map(str, nums))} ({i}={rank:.2f})': {
+                # Show possible outcomes, their likelihood, and next steps
+                f'on {matches} ({len(splits[matches]) / len(pool):.2f})': (
+                    # Partial results are only at the top level
+                    _remove_partial(tree_from_path(
+                        pool=splits[matches],
+                        path=path[matches],
+                        force_guesses=(
+                            force_guesses[1:]
+                            if force_guesses is not None
+                            else None
+                        ),
+                        levels=(
+                            levels - 1
+                            if levels is not None
+                            else None
+                        ),
+                    ))
+                )
+                # Most common outcome at the top
+                for matches in sorted(
+                    (key for key in path.keys() if isinstance(key, int)),
+                    key=lambda matches: len(splits[matches]),
+                    reverse=True,
+                )
+            },
+        }
+
+    # Only one possible triplet in the pool
+    if not partial:
+        assert len(pool) == 1
+        return [f'must be {" ".join(map(str, pool[0]))}']
+
+    # Hit recursion limit
+    if (
+        # levels is specified and we've hit it
+        levels is not None and levels == 0
+        # Assume we hit the recursion limit if it's possible to guess
+        # *something* (the triplets aren't all empty)
+        or levels is None and any(pool)
+    ):
+        return [
+            "partial!",
+            0,
+            "could be one of",
+            *(" ".join(map(str, nums)) for nums in pool),
+        ]
+
+    # No possible guesses (such as for pool=[(),()])
+    return {
+        0: "partial!",
+        1: "...",
+        f'guess 0 ({0:.2f})': {},
+    }
 
 # list(curse(levels=1))
 
