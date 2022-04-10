@@ -197,8 +197,6 @@ def curse(
             # new_guesses = (guesses, (nums, matches))
             # if len(new_pool) == len(pool):
                 # continue
-            if len(new_pool) == 0:
-                continue
             if len(new_pool) == 1:
                 if ok is None:
                     ok = True
