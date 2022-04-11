@@ -307,7 +307,7 @@ def tree_from_path(
 
     if nums:
         if force_guesses is not None and force_guesses:
-            assert nums == force_guesses[0]
+            assert nums == list(force_guesses)[0]
             i = 0  # Index is 0 because it's forced
         else:
             # Find the original index of the guess
@@ -334,7 +334,7 @@ def tree_from_path(
                         pool=splits[matches],
                         path=path[matches],
                         force_guesses=(
-                            force_guesses[1:]
+                            list(force_guesses)[1:]
                             if force_guesses is not None
                             else None
                         ),
@@ -357,7 +357,7 @@ def tree_from_path(
     # Only one possible triplet in the pool
     if not partial:
         assert len(pool) == 1
-        return [f'must be {" ".join(map(str, pool[0]))}']
+        return [f'must be {" ".join(map(str, list(pool)[0]))}']
 
     # Hit recursion limit
     if (
