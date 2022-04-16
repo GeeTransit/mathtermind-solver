@@ -413,6 +413,10 @@ def make_parser() -> argparse.ArgumentParser:
         help="a guess of the form #[,#]*:R where R is nums matching",
     )
     parser.add_argument(
+        "--force-guess", action="append",
+        help="a guess to force of the form #[,#]*",
+    )
+    parser.add_argument(
         "--json", action="store_true",
         help="return a JSON of the paths taken",
     )
@@ -432,6 +436,10 @@ def main(argv: Optional[List[str]] = None):
             matches = int(matches)
             nums = [int(x) for x in nums.split(",")]
             pool = ok_triplets(pool=pool, nums=nums, matches=matches)
+    force_guesses = []
+    if args.force_guess is not None:
+        for guess in args.force_guess:
+            force_guesses.append([int(x) for x in guess.split(",")])
     if ":" in args.levels:
         start, stop = [int(x) for x in args.levels.split(":")]
     else:
@@ -442,7 +450,7 @@ def main(argv: Optional[List[str]] = None):
             break
     else:
         levels = start  # give best guess if not possible
-    path = curse(pool=pool, levels=levels, path=True)
+    path = curse(pool=pool, levels=levels, force_guesses=force_guesses, path=True)
     if args.json:
         print(json.dumps(path))
     else:
@@ -450,6 +458,7 @@ def main(argv: Optional[List[str]] = None):
             path=path,
             pool=pool,
             levels=levels,
+            force_guesses=force_guesses,
         )))
     if path.get("partial"):
         sys.exit(1)
