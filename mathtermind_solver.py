@@ -405,23 +405,26 @@ D = ok_triplets(pool=C, nums=(1, 5), matches=2)
 
 # curse(pool=C, levels=3)
 
-parser = argparse.ArgumentParser(description="Solve a Mathtermind game")
-parser.add_argument(
-    "-g", "--guessed", action="append",
-    help="a guess of the form #[,#]*:R where R is nums matching",
-)
-parser.add_argument(
-    "--json", action="store_true",
-    help="return a JSON of the paths taken",
-)
-parser.add_argument(
-    "--levels", default="1:9",
-    help="the range of levels to try (of the form #:# or #)",
-)
+def make_parser() -> argparse.ArgumentParser:
+    """Return CLI argument parser"""
+    parser = argparse.ArgumentParser(description="Solve a Mathtermind game")
+    parser.add_argument(
+        "-g", "--guessed", action="append",
+        help="a guess of the form #[,#]*:R where R is nums matching",
+    )
+    parser.add_argument(
+        "--json", action="store_true",
+        help="return a JSON of the paths taken",
+    )
+    parser.add_argument(
+        "--levels", default="1:9",
+        help="the range of levels to try (of the form #:# or #)",
+    )
+    return parser
 
 def main(argv: Optional[List[str]] = None):
     """Entry point to Mathtermind solver"""
-    args = parser.parse_args(argv)
+    args = make_parser().parse_args(argv)
     pool = DEFAULT_POOL
     if args.guessed is not None:
         for guessed in args.guessed:
