@@ -452,7 +452,7 @@ def main(argv: Optional[List[str]] = None):
         levels = start  # give best guess if not possible
     path = curse(pool=pool, levels=levels, force_guesses=force_guesses, path=True)
     if args.json:
-        print(json.dumps(path))
+        print(json.dumps(path, separators=(",",":")))
     else:
         print(tree_to_text(tree_from_path(
             path=path,
