@@ -436,7 +436,7 @@ def main(argv: Optional[List[str]] = None):
         start, stop = [int(x) for x in args.levels.split(":")]
     else:
         start = int(args.levels)
-        stop = start + 1
+        stop = start
     for levels in range(start, stop + 1):
         if curse(pool=pool, levels=levels):
             break
